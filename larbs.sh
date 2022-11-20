@@ -7,7 +7,7 @@
 ### OPTIONS AND VARIABLES ###
 
 dotfilesrepo="https://github.com/lukesmithxyz/voidrice.git"
-progsfile="https://raw.githubusercontent.com/LukeSmithxyz/LARBS/master/progs.csv"
+progsfile="https://raw.githubusercontent.com/ztclog/LARBS/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
 
@@ -25,7 +25,7 @@ error() {
 
 welcomemsg() {
 	whiptail --title "Welcome!" \
-		--msgbox "Welcome to Luke's Auto-Rice Bootstrapping Script!\\n\\nThis script will automatically install a fully-featured Linux desktop, which I use as my main machine.\\n\\n-Luke" 10 60
+		--msgbox "Welcome to ZTCLOG-Forked-Luke's Auto-Rice Bootstrapping Script!\\n\\nThis script will automatically install a fully-featured Linux desktop, which I use as my main machine.\\n\\n-Luke" 10 60
 
 	whiptail --title "Important Note!" --yes-button "All ready!" \
 		--no-button "Return..." \
@@ -84,22 +84,15 @@ refreshkeys() {
 	*)
 		whiptail --infobox "Enabling Arch Repositories..." 7 40
 		if ! grep -q "^\[universe\]" /etc/pacman.conf; then
-			echo "[universe]
-Server = https://universe.artixlinux.org/\$arch
-Server = https://mirror1.artixlinux.org/universe/\$arch
-Server = https://mirror.pascalpuffke.de/artix-universe/\$arch
-Server = https://artixlinux.qontinuum.space/artixlinux/universe/os/\$arch
-Server = https://mirror1.cl.netactuate.com/artix/universe/\$arch
-Server = https://ftp.crifo.org/artix-universe/" >>/etc/pacman.conf
+			echo "[archlinuxcn]
+			Server = https://ipv6.mirrors.ustc.edu.cn/archlinuxcn/\$arch
+			Server = https://mirrors6.tuna.tsinghua.edu.cn/archlinuxcn/\$arch
+			Server = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch
+			Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/\$arch" >>/etc/pacman.conf
 			pacman -Sy --noconfirm >/dev/null 2>&1
 		fi
 		pacman --noconfirm --needed -S \
-			artix-keyring artix-archlinux-support >/dev/null 2>&1
-		for repo in extra community; do
-			grep -q "^\[$repo\]" /etc/pacman.conf ||
-				echo "[$repo]
-Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
-		done
+			archlinuxcn-keyring >/dev/null 2>&1
 		pacman -Sy >/dev/null 2>&1
 		pacman-key --populate archlinux >/dev/null 2>&1
 		;;
@@ -142,7 +135,7 @@ gitmakeinstall() {
 		}
 	cd "$dir" || exit 1
 	make >/dev/null 2>&1
-	make install >/dev/null 2>&1
+	make clean install >/dev/null 2>&1
 	cd /tmp || return 1
 }
 
@@ -280,14 +273,6 @@ echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
-sudo -u "$name" mkdir -p "/home/$name/.config/abook/"
-sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
-
-# dbus UUID must be generated for Artix runit.
-dbus-uuidgen >/var/lib/dbus/machine-id
-
-# Use system notifications for Brave on Artix
-echo "export \$(dbus-launch)" >/etc/profile.d/dbus.sh
 
 # Enable tap to click
 [ ! -f /etc/X11/xorg.conf.d/40-libinput.conf ] && printf 'Section "InputClass"
@@ -302,7 +287,7 @@ EndSection' >/etc/X11/xorg.conf.d/40-libinput.conf
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
 echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-larbs-wheel-can-sudo
-echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/pacman -Syyuw --noconfirm,/usr/bin/pacman -S -u -y --config /etc/pacman.conf --,/usr/bin/pacman -S -y -u --config /etc/pacman.conf --" >/etc/sudoers.d/01-larbs-cmds-without-password
+# echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/pacman -Syyuw --noconfirm,/usr/bin/pacman -S -u -y --config /etc/pacman.conf --,/usr/bin/pacman -S -y -u --config /etc/pacman.conf --" >/etc/sudoers.d/01-larbs-cmds-without-password
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-larbs-visudo-editor
 
 # Last message! Install complete!
