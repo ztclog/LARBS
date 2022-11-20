@@ -6,12 +6,31 @@
 
 ### OPTIONS AND VARIABLES ###
 
-dotfilesrepo="https://github.com/lukesmithxyz/voidrice.git"
+dotfilesrepo="https://github.com/ztclog/voidrice.git"
 progsfile="https://raw.githubusercontent.com/ztclog/LARBS/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
 
 ### FUNCTIONS ###
+
+mirrorlistselffeed() {
+	echo "Server = https://ipv6.mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
+Server = https://mirrors6.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
+Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+	pacman-key --populate
+
+if ! grep -q "^\[archlinuxcn\]" /etc/pacman.conf; then
+	echo "[archlinuxcn]
+Server = https://ipv6.mirrors.ustc.edu.cn/archlinuxcn/\$arch
+Server = https://mirrors6.tuna.tsinghua.edu.cn/archlinuxcn/\$arch
+Server = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/\$arch" >>/etc/pacman.conf
+	pacman -Syy --noconfirm >/dev/null 2>&1
+fi
+pacman --noconfirm --needed -S \
+	archlinuxcn-keyring >/dev/null 2>&1
+}
 
 installpkg() {
 	pacman --noconfirm --needed -S "$1" >/dev/null 2>&1
@@ -83,7 +102,7 @@ refreshkeys() {
 		;;
 	*)
 		whiptail --infobox "Enabling Arch Repositories..." 7 40
-		if ! grep -q "^\[universe\]" /etc/pacman.conf; then
+		if ! grep -q "^\[archlinuxcn\]" /etc/pacman.conf; then
 			echo "[archlinuxcn]
 			Server = https://ipv6.mirrors.ustc.edu.cn/archlinuxcn/\$arch
 			Server = https://mirrors6.tuna.tsinghua.edu.cn/archlinuxcn/\$arch
@@ -93,8 +112,7 @@ refreshkeys() {
 		fi
 		pacman --noconfirm --needed -S \
 			archlinuxcn-keyring >/dev/null 2>&1
-		pacman -Sy >/dev/null 2>&1
-		pacman-key --populate archlinux >/dev/null 2>&1
+		pacman -Syy >/dev/null 2>&1
 		;;
 	esac
 }
@@ -202,6 +220,8 @@ finalize() {
 
 ### This is how everything happens in an intuitive format and order.
 
+mirrorlistselffeed || error "mirrorlist not update"
+
 # Check if user is root on Arch distro. Install whiptail.
 pacman --noconfirm --needed -Sy libnewt ||
 	error "Are you sure you're running this as the root user, are on an Arch-based distribution and have an internet connection?"
@@ -250,7 +270,8 @@ sed -Ei "s/^#(ParallelDownloads).*/\1 = 5/;/^#Color$/s/#//" /etc/pacman.conf
 # Use all cores for compilation.
 sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
-manualinstall yay || error "Failed to install AUR helper."
+# archlinuxcn repo gets yay
+installpkg yay || error "Failed to install AUR helper."
 
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
@@ -268,7 +289,7 @@ rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/
 
 # Most important command! Get rid of the beep!
 rmmod pcspkr
-echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
+echo "blacklist pcspkr" >/etc/modprobe.d/blacklist.conf
 
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
