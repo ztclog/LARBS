@@ -1,11 +1,11 @@
-# Luke's Auto-Rice Bootstrapping Scripts (LARBS)
+# ZTCLOG-Forked-Luke's Auto-Rice Bootstrapping Scripts (LARBS)
 
 ## Installation:
 
 On an Arch-based distribution as root, run the following:
 
 ```
-curl -LO larbs.xyz/larbs.sh
+curl -LO https://raw.githubusercontent.com/ztclog/LARBS/master/larbs.sh
 sh larbs.sh
 ```
 
@@ -18,18 +18,6 @@ and minimal terminal-and-vim-based Arch Linux environment.
 
 LARBS can be run on a fresh install of Arch or Artix Linux, and provides you
 with a fully configured diving-board for work or more customization.
-
-## Customization
-
-By default, LARBS uses the programs [here in progs.csv](progs.csv) and installs
-[my dotfiles repo (voidrice) here](https://github.com/lukesmithxyz/voidrice),
-but you can easily change this by either modifying the default variables at the
-beginning of the script or giving the script one of these options:
-
-- `-r`: custom dotfiles repository (URL)
-- `-p`: custom programs list/dependencies (local file or URL)
-- `-a`: a custom AUR helper (must be able to install with `-S` unless you
-  change the relevant line in the script
 
 ### The `progs.csv` list
 
@@ -69,4 +57,4 @@ password multiple times in installation). This is done ad-hocly, but
 effectively with the `newperms` function. At the end of installation,
 `newperms` removes those settings, giving the user the ability to run only
 several basic sudo commands without a password (`shutdown`, `reboot`,
-`pacman -Syu`).
+`pacman -Syu`). Actually, Me throw that function out.
