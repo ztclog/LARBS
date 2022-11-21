@@ -18,18 +18,23 @@ mirrorlistselffeed() {
 Server = https://mirrors6.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
 Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
 Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+	for repo in multilib; do
+		grep -q "^\[$repo\]" /etc/pacman.conf ||
+			echo "[$repo]
+Include = /etc/pacman.d/mirrorlist" >>/etc/pacman.conf
+	done
 	pacman-key --populate
 
-if ! grep -q "^\[archlinuxcn\]" /etc/pacman.conf; then
-	echo "[archlinuxcn]
+	if ! grep -q "^\[archlinuxcn\]" /etc/pacman.conf; then
+		echo "[archlinuxcn]
 Server = https://ipv6.mirrors.ustc.edu.cn/archlinuxcn/\$arch
 Server = https://mirrors6.tuna.tsinghua.edu.cn/archlinuxcn/\$arch
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch
 Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/\$arch" >>/etc/pacman.conf
-	pacman -Syy --noconfirm >/dev/null 2>&1
-fi
-pacman --noconfirm --needed -S \
-	archlinuxcn-keyring >/dev/null 2>&1
+		pacman -Syy --noconfirm >/dev/null 2>&1
+	fi
+	pacman --noconfirm --needed -S \
+		archlinuxcn-keyring >/dev/null 2>&1
 }
 
 installpkg() {
@@ -271,7 +276,7 @@ sed -Ei "s/^#(ParallelDownloads).*/\1 = 5/;/^#Color$/s/#//" /etc/pacman.conf
 sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 # archlinuxcn repo gets yay
-installpkg yay || error "Failed to install AUR helper."
+pacman --noconfirm --needed -S yay || error "Failed to install AUR helper."
 
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
