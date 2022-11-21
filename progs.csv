@@ -85,6 +85,7 @@
 ,wine-mono,""
 ,wine-wechat-setup,""
 ,xclip,""
+,xorg-xrdb,""
 ,xorg-xinit,""
 ,xorg-xsetroot,""
 ,xorg-server,""
