@@ -67,6 +67,7 @@
 ,pkgconf,""
 ,pkgfile,""
 ,polkit,""
+,python-pynvim,""
 ,qemu-base,""
 ,qemu-block-iscsi,""
 ,ranger,""
