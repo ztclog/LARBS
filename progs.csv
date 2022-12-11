@@ -64,7 +64,6 @@
 ,pacman-contrib,""
 ,pipewire-alsa,""
 ,pipewire-pulse,""
-,pinentry,""
 ,pkgconf,""
 ,pkgfile,""
 ,polkit,""
