@@ -9,6 +9,7 @@
 ,cloudflarespeedtest,""
 ,cmake,""
 ,cups,""
+,ctags,""
 ,ddcutil,""
 ,dnsmasq,""
 ,docker,""
